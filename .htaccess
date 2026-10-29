@@ -1,0 +1,40 @@
+# Vermi Compost store: rules for Apache / LiteSpeed (Hostinger).
+Options -Indexes
+DirectoryIndex index.php
+ErrorDocument 404 /404.php
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# If the store is in a sub-folder (example.com/store/), change this to: RewriteBase /store/
+RewriteBase /
+
+# To force HTTPS, uncomment these two lines (or switch on "Force HTTPS" in hPanel).
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Private code, settings, uploaded PayU files and hidden files are never served.
+RewriteRule ^(includes|storage|database|docs)(/|$) - [F,L]
+RewriteRule ^(config\.php|router\.php|README\.md)$ - [F,L]
+RewriteRule (^|/)\.(?!well-known/) - [F,L]
+RewriteRule ^assets/uploads/.*\.(php\d?|phtml|phar|cgi|pl|py|sh)$ - [F,L,NC]
+
+# Page addresses used by vermionline.in
+RewriteRule ^(about_us|faq|shipping-policy|return-policy|refund-policy|cancellation-policy|privacy-policy|terms-and-conditions)/?$ page.php?slug=$1 [L,QSA]
+RewriteRule ^sign-up/?$ sign-in.php?mode=register [L,QSA]
+
+# /shop serves shop.php, /cart serves cart.php, and so on.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+?)/?$ $1.php [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+<FilesMatch "\.(sql|md|log|ini|lock|bak|dist)$">
+Require all denied
+</FilesMatch>

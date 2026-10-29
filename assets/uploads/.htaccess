@@ -1,0 +1,4 @@
+# Uploaded product images only: never run scripts here.
+<FilesMatch "\.(php\d?|phtml|phar|cgi|pl|py|sh)$">
+Require all denied
+</FilesMatch>
